@@ -1,0 +1,13 @@
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import auth from './routes/auth.js';
+import queries from './routes/queries.js';
+import admin from './routes/admin.js';
+import { notFound, errorHandler } from './middleware/error.js';
+const app = express();
+app.use(cors({ origin: process.env.CLIENT_URL })); app.use(express.json());
+app.use('/api/auth', auth); app.use('/api/queries', queries); app.use('/api/admin', admin);
+app.use(notFound); app.use(errorHandler);
+connectDB().catch((e) => { console.error('\nMongoDB connection failed:', e.message, '\nStart MongoDB locally or put your Atlas URI in server/.env (MONGO_URI).'); process.exit(1); }).then(() => app.listen(process.env.PORT || 5000, () => console.log('API running')));
